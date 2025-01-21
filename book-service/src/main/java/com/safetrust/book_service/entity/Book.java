@@ -40,7 +40,7 @@ public class Book {
     private String genre;
 
     @Column(name = "borrowed_total")
-    private Integer BorrowedTotal;
+    private Integer borrowedTotal;
 
     @Column
     private String code;

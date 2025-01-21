@@ -39,8 +39,8 @@ import feign.FeignException;
 
 @Service
 @Transactional
-public class BorrowService implements IBorrowService{
-    private Logger logger  = LoggerFactory.getLogger(this.getClass());
+public class BorrowService implements IBorrowService {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private BorrowRepository borrowRepo;
@@ -66,14 +66,14 @@ public class BorrowService implements IBorrowService{
 
     @Override
     public List<Borrow> getAllBorrows() {
-       return borrowRepo.findAll();
+        return borrowRepo.findAll();
     }
 
     @Override
     public Borrow createBorrow(Borrow borrow) throws Exception {
         try {
             BookDTO book = bookService.getbookById(borrow.getBook().getId()).getBody();
-            if(!EBookStatus.AVAILABLE.equals(book.getStatus())){
+            if (!EBookStatus.AVAILABLE.equals(book.getStatus())) {
                 logger.error("Book is not available with bookId: {} ", book.getId());
                 throw new EntityNotFoundException("Book is not available to borrow with bookId: " + book.getId());
             }
@@ -85,18 +85,19 @@ public class BorrowService implements IBorrowService{
             long bookId = borrow.getBook().getId();
             long userId = borrow.getUser().getId();
             logger.error("Book or user is not existed with bookId: {} and userId: {}", bookId, userId, e);
-            throw new EntityNotFoundException("Book or user is not existed with bookId: " + bookId + " and userId: " + userId);
-        } catch(FeignException e){
+            throw new EntityNotFoundException(
+                    "Book or user is not existed with bookId: " + bookId + " and userId: " + userId);
+        } catch (FeignException e) {
             logger.error(e.getMessage());
             throw new EntityNotFoundException(e.getMessage());
         }
-        
+
     }
 
     @Override
     public Borrow getBorrowById(long id) throws EntityNotFoundException {
         Optional<Borrow> borrowEntity = borrowRepo.findById(id);
-        if(borrowEntity.isPresent() ){
+        if (borrowEntity.isPresent()) {
             return borrowEntity.get();
         } else {
             logger.error("Borrow is not existed with id: {}", id);
@@ -105,12 +106,12 @@ public class BorrowService implements IBorrowService{
     }
 
     @Override
-    public void updateBorrowStatusToDone(long id) throws EntityNotFoundException, UnmatchIDException {
+    public void updateBorrowStatus(long id, EBookStatus status, ETrackingUser tracking) throws EntityNotFoundException, UnmatchIDException {
         try {
             BorrowDTO borrow = borrowMapper.convertToDto(getBorrowById(id));
-            clientAsynService.updatebookAfterBrowing(borrow.getBook(), EBookStatus.AVAILABLE.getValue());
-            clientAsynService.updateUserAfterBrowing(borrow.getUser(), ETrackingUser.RETURNED.getValue());
-            borrowRepo.updateBorrowStatusToDone(id, EBorrowStatus.DONE);
+            clientAsynService.updatebookAfterBrowing(borrow.getBook(), status.getValue());
+            clientAsynService.updateUserAfterBrowing(borrow.getUser(), tracking.getValue());
+            borrowRepo.updateBorrowStatusToDone(id, EBorrowStatus.OVERDUE);
         } catch (JpaObjectRetrievalFailureException e) {
             logger.error("Borrow or user is not existed with bookId: {} and userId: {}", id, e);
             throw new EntityNotFoundException("Borrow or user is not existed with bookId: " + id);
@@ -129,26 +130,29 @@ public class BorrowService implements IBorrowService{
             logger.error("User can't be delete because relationship with id: {}, {}", id, e);
             throw new CanNotDeleteEntityException("User can't be delete because relationship with id: " + id);
         }
-        
+
     }
 
     // private void getBookAndUsser(BookDTO book, UserDTO user) throws Exception {
-    //     CompletableFuture<String> bookServiceResponse  = clientAsynService.findBookById(book.getId(), book);
-         
-    //     CompletableFuture<String> userServiceResponse = clientAsynService.findUserById(user.getId(), user);
-        
-    //     CompletableFuture<String> completableFuture = bookServiceResponse
-    //             .thenComposeAsync(engWordServiceValue -> userServiceResponse
-    //                     .thenApplyAsync(ielsWordServiceValue -> engWordServiceValue + ielsWordServiceValue));
-    //     while (true) {
-    //         if(completableFuture.isDone()){
-    //             if(completableFuture.isCompletedExceptionally()){
-    //                 logger.error("Exception Asyn");
-    //                 throw new Exception("Exception Asyn");
-    //             } 
-    //             break;
-    //         }
-    //     }
+    // CompletableFuture<String> bookServiceResponse =
+    // clientAsynService.findBookById(book.getId(), book);
+
+    // CompletableFuture<String> userServiceResponse =
+    // clientAsynService.findUserById(user.getId(), user);
+
+    // CompletableFuture<String> completableFuture = bookServiceResponse
+    // .thenComposeAsync(engWordServiceValue -> userServiceResponse
+    // .thenApplyAsync(ielsWordServiceValue -> engWordServiceValue +
+    // ielsWordServiceValue));
+    // while (true) {
+    // if(completableFuture.isDone()){
+    // if(completableFuture.isCompletedExceptionally()){
+    // logger.error("Exception Asyn");
+    // throw new Exception("Exception Asyn");
     // }
-    
+    // break;
+    // }
+    // }
+    // }
+
 }

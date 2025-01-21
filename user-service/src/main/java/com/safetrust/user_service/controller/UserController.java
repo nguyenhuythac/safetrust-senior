@@ -165,7 +165,9 @@ public class UserController {
             userService.updateUserStatus(id, total + 1, ETrackingUser.BORROWED);
         } else if(ETrackingUser.RETURNED.getValue().equals(status)) {
             userService.updateUserStatus(id, total, ETrackingUser.RETURNED);
-        }else{
+        } else if(ETrackingUser.OVERDUED.getValue().equals(status)) {
+            userService.updateUserStatus(id, total, ETrackingUser.OVERDUED);
+        } else{
             logger.error("status in URL and Body don't match");
             throw new UnmatchIDException("status in URL and Body don't match");
         }       

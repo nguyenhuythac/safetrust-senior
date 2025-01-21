@@ -1,5 +1,6 @@
 package com.safetrust.book_service.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -7,6 +8,7 @@ import org.springframework.data.domain.Page;
 import com.safetrust.book_service.entity.Book;
 import com.safetrust.book_service.exception.CanNotDeleteEntityException;
 import com.safetrust.book_service.exception.EntityNotFoundException;
+import com.safetrust.book_service.model.BookDTO;
 import com.safetrust.book_service.status.EBookStatus;
 
 public interface IBookService {
@@ -82,5 +84,11 @@ public interface IBookService {
     List<Book> searchBookByAuthor(String author);
 
     List<Book> searchBookByGenre(String genre);
+
+    List<Book> findBestBooksByOfPerInventory();
+
+    List<Book> findOverdueBooksByOfPerInventory();
+
+    int findAvailableBooksByOfPerInventory();
 
 }

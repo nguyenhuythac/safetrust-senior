@@ -1,5 +1,6 @@
 package com.safetrust.book_service.service.impl;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,7 @@ import com.safetrust.book_service.service.IBookService;
 import com.safetrust.book_service.status.EBookStatus;
 import com.safetrust.book_service.exception.CanNotDeleteEntityException;
 import com.safetrust.book_service.exception.EntityNotFoundException;
+import com.safetrust.book_service.model.BookDTO;
 
 @Service
 @Transactional
@@ -123,6 +125,21 @@ public class BookService implements IBookService{
     @Override
     public List<Book> searchBookByGenre(String genre) {
         return bookRepo.findByGenre(genre);
+    }
+
+    @Override
+    public List<Book> findBestBooksByOfPerInventory() {
+         return bookRepo.findBestBooksByOfPerInventory();
+    }
+
+    @Override
+    public List<Book> findOverdueBooksByOfPerInventory() {
+        return bookRepo.findOverdueBooksByOfPerInventory(EBookStatus.OVERDUE);
+    }
+
+    @Override
+    public List<Integer> findAvailableBooksByOfPerInventory() {
+        return bookRepo.findAvailableBooksByOfPerInventory(EBookStatus.AVAILABLE);
     }
     
 }

@@ -1,0 +1,128 @@
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 2181:2181
+    restart: "on-failure"
+
+  kafka-1:
+    image: confluentinc/cp-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+    restart: "on-failure"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      
+  #microservice
+  configservice:
+    build:
+      context: config-service
+      dockerfile: Dockerfile
+    image: config-service
+    ports:
+      - 8888:8888
+    restart: on-failure
+    env_file:
+      - local.env
+
+  discoveryservice:
+    build:
+      context: discovery-service
+      dockerfile: Dockerfile
+    image: discovery-service
+    depends_on:
+      - configservice
+    ports:
+      - 9999:9999
+    restart: on-failure
+    env_file:
+      - local.env
+
+  inventoryservice:
+    build:
+      context: inventory-service
+      dockerfile: Dockerfile
+    image: inventory-service
+    depends_on:
+      - discoveryservice
+    ports:
+      - 8081:8081
+    restart: on-failure
+    env_file:
+      - local.env
+
+  bookservice:
+    build:
+      context: book-service
+      dockerfile: Dockerfile
+    image: book-service
+    depends_on:
+      - discoveryservice
+    ports:
+      - 8082:8082
+    restart: on-failure
+    env_file:
+      - local.env
+
+  userservice:
+    build:
+      context: user-service
+      dockerfile: Dockerfile
+    image: user-service
+    depends_on:
+      - discoveryservice
+    ports:
+      - 8083:8083
+    restart: on-failure
+    env_file:
+      - local.env
+
+  borrowservice:
+    build:
+      context: borrow-service
+      dockerfile: Dockerfile
+    image: borrow-service
+    depends_on:
+      - discoveryservice
+    ports:
+      - 8084:8084
+    restart: on-failure
+    env_file:
+      - local.env
+
+  reportservice:
+    build:
+      context: report-service
+      dockerfile: Dockerfile
+    image: report-service
+    depends_on:
+      - discoveryservice
+    ports:
+      - 8085:8085
+    restart: on-failure
+    env_file:
+      - local.env
+
+  gatewayservice:
+    build:
+      context: gatewayservice
+      dockerfile: Dockerfile
+    image: gateway-service
+    depends_on:
+      - discoveryservice
+    ports:
+      - 8080:8080
+    restart: on-failure
+    env_file:
+      - local.env
+

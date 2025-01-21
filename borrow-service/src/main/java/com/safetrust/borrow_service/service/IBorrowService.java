@@ -8,6 +8,8 @@ import com.safetrust.borrow_service.entity.Borrow;
 import com.safetrust.borrow_service.exception.CanNotDeleteEntityException;
 import com.safetrust.borrow_service.exception.EntityNotFoundException;
 import com.safetrust.borrow_service.exception.UnmatchIDException;
+import com.safetrust.borrow_service.status.EBookStatus;
+import com.safetrust.borrow_service.status.ETrackingUser;
 
 public interface IBorrowService {
     /**
@@ -51,12 +53,15 @@ public interface IBorrowService {
     /**
     * 
     * <p>Update Contact</p>
+     * @param returned 
+     * @param available 
     * @param contactEntity the contact information
     * @return ContactEntity the updated contact
      * @throws UnmatchIDException 
     *
     */
-    void updateBorrowStatusToDone(long id) throws EntityNotFoundException, UnmatchIDException;
+    void updateBorrowStatus(long id, EBookStatus available, ETrackingUser returned)
+            throws EntityNotFoundException, UnmatchIDException;
 
     /**
     * 

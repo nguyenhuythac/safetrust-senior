@@ -23,7 +23,7 @@ public class BookDTO {
     private String code;
     private EBookStatus status;
     private Date borrowedDate;
-    private Integer BorrowedTotal;
+    private Integer borrowedTotal;
 
     @JsonIgnoreProperties("books")
     private InventoryDTO inventory;

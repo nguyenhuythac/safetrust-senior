@@ -30,6 +30,7 @@ import com.safetrust.book_service.model.BookDTO;
 import com.safetrust.book_service.model.InventoryDTO;
 import com.safetrust.book_service.service.IBookService;
 import com.safetrust.book_service.status.EBookStatus;
+import com.safetrust.book_service.status.EReportType;
 
 import jakarta.validation.Valid;
 
@@ -131,6 +132,29 @@ public class BookController {
         return new ResponseEntity<>(bookMapper.convertToDto(bookEntity), HttpStatus.OK);
     }
 
+    @GetMapping("/report/{report}")
+    public List<BookDTO> getBookReport(@PathVariable("report") String report) throws UnmatchIDException {
+        List<Book> books = new ArrayList<>();
+        if (EReportType.FIND_BEST_BORROWED_BOOK.getValue().equals(report)) {
+            logger.info("find best borrow book per inventory");
+            books = bookService.findBestBooksByOfPerInventory();
+        } else if (EReportType.FIND_OVERDUE_BOOK.getValue().equals(report)) {
+            logger.info("find all overdue book per inventory");
+            books = bookService.findOverdueBooksByOfPerInventory();
+        } else {
+            logger.error("wrong report in URL, {}", report);
+            throw new UnmatchIDException("report in URL: " + report);
+        }
+        return books.stream().map(book -> bookMapper.convertToDto(book))
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/report/countbook")
+    public List<Integer> getBookReportAvaille() throws UnmatchIDException {        
+        logger.info("find all overdue book per inventory");       
+        return bookService.findAvailableBooksByOfPerInventory();
+    }
+
     /**
      * 
      * <p>
@@ -189,8 +213,10 @@ public class BookController {
             throws EntityNotFoundException, UnmatchIDException {
         if(EBookStatus.BORROWING.getValue().equals(status)){
             bookService.updatebookAfter(id, total + 1, EBookStatus.BORROWING);
-        }else if(EBookStatus.AVAILABLE.getValue().equals(status)){
+        } else if(EBookStatus.AVAILABLE.getValue().equals(status)){
             bookService.updatebookAfter(id, total, EBookStatus.AVAILABLE);
+        } else if(EBookStatus.OVERDUE.getValue().equals(status)){
+            bookService.updatebookAfter(id, total, EBookStatus.OVERDUE);
         } else{
             logger.error("status in URL and Body don't match");
             throw new UnmatchIDException("status in URL and Body don't match");

@@ -5,8 +5,12 @@ import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
 
+import com.safetrust.inventory_service.status.EBookStatus;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,10 +34,20 @@ public class Book {
     private String name;
 
     @Column
+    private String author;
+
+    @Column
+    private String genre;
+
+    @Column(name = "borrowed_total")
+    private Integer borrowedTotal;
+
+    @Column
     private String code;
 
     @Column
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private EBookStatus status;
 
     @Column(name="borrowed_date",updatable = false)
     @CreatedDate

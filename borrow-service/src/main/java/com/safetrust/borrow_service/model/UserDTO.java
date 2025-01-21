@@ -32,7 +32,7 @@ public class UserDTO {
     private String address;        
     private ETrackingUser tracking;
     private Date createdDate;
-    private int borowedTotal; 
+    private Integer borowedTotal; 
 
     @JsonIgnoreProperties("createdBrandUsers")
     private InventoryDTO created_inventory;

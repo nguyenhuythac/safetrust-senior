@@ -3,6 +3,7 @@ package com.safetrust.book_service.status;
 public enum EBookStatus {
     AVAILABLE("available"),
     BORROWING("borrowing"),
+    OVERDUE("overdue"),
     LOST("lost");
 
     EBookStatus(String value){

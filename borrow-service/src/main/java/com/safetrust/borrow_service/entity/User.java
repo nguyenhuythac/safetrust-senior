@@ -43,6 +43,7 @@ public class User {
     @Column(name="created_date", updatable = false)
     @CreatedDate
     private Date createdDate;
+    private Integer borowedTotal; 
 
     @ManyToOne
     @JoinColumn(name="created_inventory_id")

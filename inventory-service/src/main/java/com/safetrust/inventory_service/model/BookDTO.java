@@ -5,8 +5,10 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.safetrust.inventory_service.status.EBookStatus;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,14 +19,21 @@ import lombok.NoArgsConstructor;
 public class BookDTO {
     private Long id;
 
-    @NotBlank(message = "name should not be empty")
+    @NotNull(message = "name should not be empty")
     private String name;
 
-    @NotBlank(message = "code should not be empty")
+    @NotBlank(message = "author should not be empty")
+    private String author;
+
+    @NotBlank(message = "genre should not be empty")
+    private String genre;
+
+    private Integer borrowedTotal;
+
+    @NotBlank(message = "name should not be empty")
     private String code;
 
-    @NotBlank(message = "status should not be empty")
-    private String status;
+    private EBookStatus status;
 
     private Date borrowedDate;
 

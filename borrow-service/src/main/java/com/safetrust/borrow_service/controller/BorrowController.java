@@ -29,6 +29,8 @@ import com.safetrust.borrow_service.model.BookDTO;
 import com.safetrust.borrow_service.model.BorrowDTO;
 import com.safetrust.borrow_service.model.UserDTO;
 import com.safetrust.borrow_service.service.IBorrowService;
+import com.safetrust.borrow_service.status.EBookStatus;
+import com.safetrust.borrow_service.status.ETrackingUser;
 
 import jakarta.validation.Valid;
 
@@ -149,7 +151,19 @@ public class BorrowController {
             logger.error("ID in URL and Body don't match");
             throw new UnmatchIDException("ID in URL and Body don't match");
         }
-        borrowService.updateBorrowStatusToDone(id);
+        borrowService.updateBorrowStatus(id, EBookStatus.AVAILABLE, ETrackingUser.RETURNED);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("/update-overdue-status/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<BorrowDTO> updateborrowStatusToOverdue(@PathVariable("id") long id)
+            throws EntityNotFoundException, UnmatchIDException {
+        if (id == 0) {
+            logger.error("ID in URL and Body don't match");
+            throw new UnmatchIDException("ID in URL and Body don't match");
+        }
+        borrowService.updateBorrowStatus(id, EBookStatus.OVERDUE, ETrackingUser.OVERDUED);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

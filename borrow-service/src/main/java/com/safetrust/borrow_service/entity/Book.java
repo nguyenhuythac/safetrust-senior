@@ -41,7 +41,7 @@ public class Book {
     private Date borrowedDate;
 
     @Column(name = "borrowed_total")
-    private Integer BorrowedTotal;
+    private Integer borrowedTotal;
 
     @ManyToOne
     @JoinColumn(name="inventory_id")

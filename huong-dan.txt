@@ -1,0 +1,13 @@
+features:
+	- JDK 17
+	- Spring 3.4.1
+	- Mysql
+	- Kafka
+- Run Docker for all project:
+	- in root folder run cmd: docker-compose up -d --build
+	- swagger address:
+		- Inventory service: http://localhost:8081/swagger-ui/index.html
+		- Book service: http://localhost:8082/swagger-ui/index.html
+		- User service: http://localhost:8083/swagger-ui/index.html
+		- Borrow service: http://localhost:8084/swagger-ui/index.html
+		- Report service: http://localhost:8085/swagger-ui/index.html

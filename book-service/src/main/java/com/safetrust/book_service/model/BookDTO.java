@@ -28,7 +28,7 @@ public class BookDTO {
     @NotBlank(message = "genre should not be empty")
     private String genre;
 
-    private Integer BorrowedTotal;
+    private Integer borrowedTotal;
 
     @NotBlank(message = "name should not be empty")
     private String code;
