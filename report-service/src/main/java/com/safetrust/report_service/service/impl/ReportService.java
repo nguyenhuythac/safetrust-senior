@@ -9,16 +9,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.safetrust.report_service.client.IBookService;
+import com.safetrust.report_service.client.IUserService;
 import com.safetrust.report_service.exception.UnmatchIDException;
 import com.safetrust.report_service.model.BookDTO;
 import com.safetrust.report_service.model.ReportDTO;
-import com.safetrust.report_service.service.IRepostService;
+import com.safetrust.report_service.service.IReportService;
 import com.safetrust.report_service.status.EReportType;
 
 @Service
-public class RepostService implements IRepostService{
+public class ReportService implements IReportService{
     @Autowired
     private IBookService bookService;
+
+    @Autowired
+    private IUserService userService;
 
     @Override
     public ReportDTO getBesBookPerInventory() throws UnmatchIDException {
@@ -58,6 +62,16 @@ public class RepostService implements IRepostService{
                 overdueBookPerBranch.put(book.getInventory().getName(), bookList);
             }           
         }
+        return report;
+    }
+
+    @Override
+    public ReportDTO countAvailableBooksAndUserPerInventory() throws UnmatchIDException {
+        Map<String, Long> countBook = bookService.getBookReportAvaille();
+        Map<String, Long> countUser = userService.getUserReportAvaille();
+        ReportDTO report = new ReportDTO();
+        report.setTotalAvailableBookPerBranch(countBook);
+        report.setTotalAvailableUserPerBranch(countUser);
         return report;
     }
 }

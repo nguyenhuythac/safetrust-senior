@@ -18,7 +18,7 @@ public class ReportDTO {
 
     private Map<String, Map<String, Integer>> mostBorrowedBookPerBranch = new HashMap<>();
     private Map<String, List<String>> overdueBookPerBranch= new HashMap<>();
-    private Integer totalAvailableBook;
-
+    private Map<String, Long> totalAvailableBookPerBranch = new HashMap<>();
+    private Map<String, Long> totalAvailableUserPerBranch = new HashMap<>();
 
 }

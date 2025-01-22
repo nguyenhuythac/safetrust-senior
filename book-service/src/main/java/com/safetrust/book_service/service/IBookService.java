@@ -2,6 +2,7 @@ package com.safetrust.book_service.service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 
@@ -89,6 +90,6 @@ public interface IBookService {
 
     List<Book> findOverdueBooksByOfPerInventory();
 
-    int findAvailableBooksByOfPerInventory();
+    Map<String, Long> findAvailableBooksByOfPerInventory();
 
 }

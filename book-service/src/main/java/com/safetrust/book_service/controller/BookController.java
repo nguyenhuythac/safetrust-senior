@@ -2,6 +2,7 @@ package com.safetrust.book_service.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -150,7 +151,7 @@ public class BookController {
     }
 
     @GetMapping("/report/countbook")
-    public List<Integer> getBookReportAvaille() throws UnmatchIDException {        
+    public Map<String, Long> getBookReportAvaille() throws UnmatchIDException {        
         logger.info("find all overdue book per inventory");       
         return bookService.findAvailableBooksByOfPerInventory();
     }

@@ -1,8 +1,11 @@
 package com.safetrust.book_service.service.impl;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,8 +141,13 @@ public class BookService implements IBookService{
     }
 
     @Override
-    public List<Integer> findAvailableBooksByOfPerInventory() {
-        return bookRepo.findAvailableBooksByOfPerInventory(EBookStatus.AVAILABLE);
+    public Map<String, Long> findAvailableBooksByOfPerInventory() {
+        Map<String, Long> result = new HashMap<>();
+        List<Object[]> countList = bookRepo.findAvailableBooksByOfPerInventory(EBookStatus.AVAILABLE);
+        for (Object[] count : countList) {
+            result.put((String)count[0], (Long)count[1]);
+        }
+        return result;
     }
     
 }

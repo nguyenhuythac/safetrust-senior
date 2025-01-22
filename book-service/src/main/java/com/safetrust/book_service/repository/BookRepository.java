@@ -1,6 +1,7 @@
 package com.safetrust.book_service.repository;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -35,6 +36,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query("select b from book b where b.status = ?1")
     List<Book> findOverdueBooksByOfPerInventory(EBookStatus overdue);
 
-    @Query("select count(b.id) count from book b where b.status = ?1 group by b.inventory.id")
-    List<Integer> findAvailableBooksByOfPerInventory(EBookStatus status);
+    @Query("select b.inventory.name, count(b.id) from book b where b.status = ?1 group by b.inventory.id")
+    List<Object[]> findAvailableBooksByOfPerInventory(EBookStatus status);
 }

@@ -1,6 +1,7 @@
 package com.safetrust.report_service.client;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,8 +14,8 @@ import com.safetrust.report_service.model.BookDTO;
 public interface IBookService {
 
     @GetMapping("/report/{report}")
-    public List<BookDTO> getBookReport(@PathVariable("report") String report) throws UnmatchIDException;
+    List<BookDTO> getBookReport(@PathVariable("report") String report) throws UnmatchIDException;
 
     @GetMapping("/report/countbook")
-    public int getBookReportAvaille() throws UnmatchIDException;
+    Map<String, Long> getBookReportAvaille() throws UnmatchIDException;
 }

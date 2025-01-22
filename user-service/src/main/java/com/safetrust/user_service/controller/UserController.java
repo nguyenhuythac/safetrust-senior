@@ -1,6 +1,7 @@
 package com.safetrust.user_service.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -190,5 +191,11 @@ public class UserController {
         logger.info("delete user with id : {}", id);
         userService.deleteUser(id);
         logger.info("delete user successfully with id : {}", id);
+    }
+
+    @GetMapping("/report/countUser")
+    public Map<String, Long> getUserReportAvaille() throws UnmatchIDException{
+        logger.info("find all available user per inventory");       
+        return userService.findAvailableUsersByOfPerInventory();
     }
 }

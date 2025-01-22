@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.safetrust.report_service.exception.EntityNotFoundException;
 import com.safetrust.report_service.exception.UnmatchIDException;
 import com.safetrust.report_service.model.ReportDTO;
-import com.safetrust.report_service.service.IRepostService;
+import com.safetrust.report_service.service.IReportService;
 
 @RestController
 @RequestMapping("/report")
@@ -21,7 +21,7 @@ public class ReportController {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     
     @Autowired
-    private IRepostService repostService;
+    private IReportService repostService;
 
     @GetMapping("/best-borrowed-book")
     @ResponseStatus(HttpStatus.OK)
@@ -38,6 +38,15 @@ public class ReportController {
         logger.info("Start report get all overdued book per inventory: ");
         ReportDTO report = repostService.getOverdueBooksPerInventory();
         logger.info("End report get all overdued book per inventory: ");
+        return new ResponseEntity<>(report, HttpStatus.OK);
+    }
+
+    @GetMapping("/count-available")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<ReportDTO> countAvailableBooksAndUserPerInventory() throws EntityNotFoundException, UnmatchIDException {
+        logger.info("Start count Available Books And Users PerInventory: ");
+        ReportDTO report = repostService.countAvailableBooksAndUserPerInventory();
+        logger.info("End count Available Books And Users PerInventory: ");
         return new ResponseEntity<>(report, HttpStatus.OK);
     }
 }

@@ -1,6 +1,7 @@
 package com.safetrust.user_service.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 
@@ -75,4 +76,6 @@ public interface IUserService {
     List<User> searchUserByName(String name);
 
     void updateUserStatus(long id, int total, ETrackingUser status);
+
+    Map<String, Long> findAvailableUsersByOfPerInventory();
 }

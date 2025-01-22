@@ -1,6 +1,8 @@
 package com.safetrust.user_service.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -98,6 +100,16 @@ public class UserService implements IUserService{
     @Override
     public void updateUserStatus(long id, int total, ETrackingUser status) {
         userRepository.updateUserStatus(id, total, status);
+    }
+
+    @Override
+    public Map<String, Long> findAvailableUsersByOfPerInventory() {
+        Map<String, Long> result = new HashMap<>();
+        List<Object[]> countList = userRepository.findAvailableUserByOfPerInventory(ETrackingUser.FINES);
+        for (Object[] count : countList) {
+            result.put((String)count[0], (Long)count[1]);
+        }
+        return result;
     }
     
 }
