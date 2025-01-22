@@ -17,7 +17,7 @@ import com.safetrust.report_service.service.IReportService;
 import com.safetrust.report_service.status.EReportType;
 
 @Service
-public class ReportService implements IReportService{
+public class ReportService implements IReportService {
     @Autowired
     private IBookService bookService;
 
@@ -33,15 +33,14 @@ public class ReportService implements IReportService{
             String inventoryName = book.getInventory().getName();
             String name = book.getName();
             int borrowedTotal = book.getBorrowedTotal();
-            if(mostBorrowedBookPerBranch.containsKey(inventoryName)){
-                mostBorrowedBookPerBranch.get(inventoryName).put(name,borrowedTotal);
-            } else{
+            if (mostBorrowedBookPerBranch.containsKey(inventoryName)) {
+                mostBorrowedBookPerBranch.get(inventoryName).put(name, borrowedTotal);
+            } else {
                 Map<String, Integer> bookMap = new HashMap<>();
                 bookMap.put(name, borrowedTotal);
                 mostBorrowedBookPerBranch.put(book.getInventory().getName(), bookMap);
             }
-            
-            
+
         }
         return report;
     }
@@ -54,13 +53,13 @@ public class ReportService implements IReportService{
         for (BookDTO book : books) {
             String inventoryName = book.getInventory().getName();
             String name = book.getName();
-            if(overdueBookPerBranch.containsKey(inventoryName)){
+            if (overdueBookPerBranch.containsKey(inventoryName)) {
                 overdueBookPerBranch.get(inventoryName).add(name);
-            } else{
+            } else {
                 List<String> bookList = new ArrayList<>();
                 bookList.add(name);
                 overdueBookPerBranch.put(book.getInventory().getName(), bookList);
-            }           
+            }
         }
         return report;
     }

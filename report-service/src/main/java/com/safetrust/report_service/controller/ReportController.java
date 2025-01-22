@@ -19,7 +19,7 @@ import com.safetrust.report_service.service.IReportService;
 @RequestMapping("/report")
 public class ReportController {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-    
+
     @Autowired
     private IReportService repostService;
 
@@ -43,7 +43,8 @@ public class ReportController {
 
     @GetMapping("/count-available")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<ReportDTO> countAvailableBooksAndUserPerInventory() throws EntityNotFoundException, UnmatchIDException {
+    public ResponseEntity<ReportDTO> countAvailableBooksAndUserPerInventory()
+            throws EntityNotFoundException, UnmatchIDException {
         logger.info("Start count Available Books And Users PerInventory: ");
         ReportDTO report = repostService.countAvailableBooksAndUserPerInventory();
         logger.info("End count Available Books And Users PerInventory: ");

@@ -12,7 +12,6 @@ import com.safetrust.report_service.model.UserDTO;
 
 @FeignClient(name = "user-service", url = "http://localhost:8083/user")
 public interface IUserService {
-    
 
     @GetMapping("/{id}")
     ResponseEntity<UserDTO> getUserById(@PathVariable("id") long id);

@@ -18,10 +18,10 @@ public class UserDTO {
     private Long id;
     private String username;
     private String phone;
-    private String address;        
+    private String address;
     private ETrackingUser tracking;
     private Date createdDate;
-    private Integer borowedTotal; 
+    private Integer borowedTotal;
     private InventoryDTO created_inventory;
     private List<BorrowDTO> borrows;
 }

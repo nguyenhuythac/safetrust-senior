@@ -10,5 +10,5 @@ public interface IReportService {
     ReportDTO getOverdueBooksPerInventory() throws UnmatchIDException;
 
     ReportDTO countAvailableBooksAndUserPerInventory() throws UnmatchIDException;
-    
+
 }
