@@ -29,7 +29,4 @@ public class Inventory {
 
     @OneToMany(mappedBy = "inventory")
     private List<Book> books;
-
-    @OneToMany(mappedBy = "created_inventory")
-    private List<User> createdBrandUsers;
 }

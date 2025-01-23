@@ -13,12 +13,15 @@ public class InventoryMapper {
     // private ModelMapper modelMapper;
 
     /**
-    * 
-    * <p>Convert entity to DTO</p>
-    * @param ContactEntity Contact Entity convert
-    * @return Contact dto
-    *
-    */
+     * 
+     * <p>
+     * Convert entity to DTO
+     * </p>
+     * 
+     * @param ContactEntity Contact Entity convert
+     * @return Contact dto
+     *
+     */
     public InventoryDTO convertToDto(Inventory entity) {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setSkipNullEnabled(true);
@@ -29,13 +32,16 @@ public class InventoryMapper {
     }
 
     /**
-    * 
-    * <p>Convert DTO  To Entity</p>
-    * @param Contact Contact DTO convert
-    * @return ContactEntity 
-    *
-    */
-    public Inventory convertToEntity(InventoryDTO dto){
+     * 
+     * <p>
+     * Convert DTO To Entity
+     * </p>
+     * 
+     * @param Contact Contact DTO convert
+     * @return ContactEntity
+     *
+     */
+    public Inventory convertToEntity(InventoryDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, Inventory.class);
     }

@@ -1,11 +1,9 @@
 package com.safetrust.book_service.service.impl;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,18 +17,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.safetrust.book_service.entity.Book;
+import com.safetrust.book_service.exception.CanNotDeleteEntityException;
+import com.safetrust.book_service.exception.EntityNotFoundException;
 import com.safetrust.book_service.repository.BookRepository;
 import com.safetrust.book_service.service.IBookService;
 import com.safetrust.book_service.status.EBookStatus;
-import com.safetrust.book_service.exception.CanNotDeleteEntityException;
-import com.safetrust.book_service.exception.EntityNotFoundException;
-import com.safetrust.book_service.model.BookDTO;
 
 @Service
 @Transactional
-public class BookService implements IBookService{
+public class BookService implements IBookService {
 
-    private Logger logger  = LoggerFactory.getLogger(BookService.class);
+    private Logger logger = LoggerFactory.getLogger(BookService.class);
 
     @Autowired
     private BookRepository bookRepo;
@@ -47,8 +44,6 @@ public class BookService implements IBookService{
         return bookRepo.findAll();
     }
 
-    
-
     @Override
     public Book createBook(Book book) throws EntityNotFoundException {
         try {
@@ -58,13 +53,13 @@ public class BookService implements IBookService{
             logger.error("Inventory is not existed with id: {}, {}", inventoryId, e);
             throw new EntityNotFoundException("Inventory is not existed with id: " + inventoryId);
         }
-        
+
     }
 
     @Override
     public Book getBookById(long id) throws EntityNotFoundException {
         Optional<Book> bookEntity = bookRepo.findById(id);
-        if(bookEntity.isPresent() ){
+        if (bookEntity.isPresent()) {
             return bookEntity.get();
         } else {
             logger.error("Book is not existed with id: {}", id);
@@ -85,7 +80,7 @@ public class BookService implements IBookService{
             logger.error("Book is not existed with id: {}, {}", id, e);
             throw new EntityNotFoundException("Book is not existed with id: " + id);
         }
-        
+
     }
 
     @Override
@@ -96,7 +91,7 @@ public class BookService implements IBookService{
             logger.error("Book cannot deleted because relationship with id: {}, {}", id, e);
             throw new CanNotDeleteEntityException("Book can't be delete because relationship with id: " + id);
         }
-        
+
     }
 
     @Override
@@ -107,7 +102,7 @@ public class BookService implements IBookService{
             logger.error("inventoryId is not existed with id: {}, {}", inventoryId, e);
             throw new EntityNotFoundException("inventoryId is not existed with id: " + inventoryId);
         }
-       
+
     }
 
     @Override
@@ -132,7 +127,7 @@ public class BookService implements IBookService{
 
     @Override
     public List<Book> findBestBooksByOfPerInventory() {
-         return bookRepo.findBestBooksByOfPerInventory();
+        return bookRepo.findBestBooksByOfPerInventory();
     }
 
     @Override
@@ -145,9 +140,9 @@ public class BookService implements IBookService{
         Map<String, Long> result = new HashMap<>();
         List<Object[]> countList = bookRepo.findAvailableBooksByOfPerInventory(EBookStatus.AVAILABLE);
         for (Object[] count : countList) {
-            result.put((String)count[0], (Long)count[1]);
+            result.put((String) count[0], (Long) count[1]);
         }
         return result;
     }
-    
+
 }

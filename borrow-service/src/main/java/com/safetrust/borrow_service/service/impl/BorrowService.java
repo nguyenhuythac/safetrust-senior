@@ -1,11 +1,8 @@
 package com.safetrust.borrow_service.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -106,7 +102,8 @@ public class BorrowService implements IBorrowService {
     }
 
     @Override
-    public void updateBorrowStatus(long id, EBookStatus status, ETrackingUser tracking) throws EntityNotFoundException, UnmatchIDException {
+    public void updateBorrowStatus(long id, EBookStatus status, ETrackingUser tracking)
+            throws EntityNotFoundException, UnmatchIDException {
         try {
             BorrowDTO borrow = borrowMapper.convertToDto(getBorrowById(id));
             clientAsynService.updatebookAfterBrowing(borrow.getBook(), status.getValue());
@@ -115,8 +112,7 @@ public class BorrowService implements IBorrowService {
         } catch (JpaObjectRetrievalFailureException e) {
             logger.error("Borrow or user is not existed with bookId: {} and userId: {}", id, e);
             throw new EntityNotFoundException("Borrow or user is not existed with bookId: " + id);
-        }
-         catch (ObjectOptimisticLockingFailureException e) {
+        } catch (ObjectOptimisticLockingFailureException e) {
             logger.error("Borrow is not existed with id: {}, {}", id, e);
             throw new EntityNotFoundException("Borrow is not existed with id: " + id);
         }
@@ -132,27 +128,5 @@ public class BorrowService implements IBorrowService {
         }
 
     }
-
-    // private void getBookAndUsser(BookDTO book, UserDTO user) throws Exception {
-    // CompletableFuture<String> bookServiceResponse =
-    // clientAsynService.findBookById(book.getId(), book);
-
-    // CompletableFuture<String> userServiceResponse =
-    // clientAsynService.findUserById(user.getId(), user);
-
-    // CompletableFuture<String> completableFuture = bookServiceResponse
-    // .thenComposeAsync(engWordServiceValue -> userServiceResponse
-    // .thenApplyAsync(ielsWordServiceValue -> engWordServiceValue +
-    // ielsWordServiceValue));
-    // while (true) {
-    // if(completableFuture.isDone()){
-    // if(completableFuture.isCompletedExceptionally()){
-    // logger.error("Exception Asyn");
-    // throw new Exception("Exception Asyn");
-    // }
-    // break;
-    // }
-    // }
-    // }
 
 }

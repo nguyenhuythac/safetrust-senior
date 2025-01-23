@@ -1,9 +1,7 @@
-package com.safetrust.inventory_service.model;
-
-import java.util.Date;
-import java.util.List;
+package com.safetrust.user_service.swagger;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -14,8 +12,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
-    private Long id;
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class UserPost {
 
     @NotBlank(message = "Username should not be empty")
     private String username;
@@ -25,12 +23,8 @@ public class UserDTO {
     private String phone;
 
     @NotBlank(message = "Address should not be empty")
-    private String address; 
-        
-    private String tracking;
-    private Date createdDate;
+    private String address;
 
     @JsonIgnoreProperties("createdBrandUsers")
-    private InventoryDTO created_inventory;
-    private List<BorrowDTO> borrows;
+    private InventoryPost created_inventory;
 }

@@ -1,6 +1,5 @@
 package com.safetrust.borrow_service.entity;
 
-
 import com.safetrust.borrow_service.status.EBorrowStatus;
 
 import jakarta.persistence.Column;
@@ -27,14 +26,14 @@ public class Borrow {
 
     @Enumerated(EnumType.STRING)
     @Column
-    private EBorrowStatus status; 
+    private EBorrowStatus status;
 
     @ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name="book_id")
+    @JoinColumn(name = "book_id")
     private Book book;
-    
+
 }

@@ -1,9 +1,9 @@
 package com.safetrust.user_service.model;
 
 import java.util.Date;
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.safetrust.user_service.status.ETrackingUser;
 
 import jakarta.validation.constraints.NotBlank;
@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTO {
     private Long id;
 
@@ -26,14 +27,12 @@ public class UserDTO {
     private String phone;
 
     @NotBlank(message = "Address should not be empty")
-    private String address; 
-    
+    private String address;
+
     private ETrackingUser tracking;
-    private int borowedTotal; 
+    private int borowedTotal;
     private Date createdDate;
 
     @JsonIgnoreProperties("createdBrandUsers")
     private InventoryDTO created_inventory;
-
-    private List<BorrowDTO> borrows;
 }

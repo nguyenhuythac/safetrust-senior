@@ -9,10 +9,9 @@ import com.safetrust.borrow_service.exception.UnmatchIDException;
 import com.safetrust.borrow_service.model.BookDTO;
 import com.safetrust.borrow_service.model.UserDTO;
 
-
 @Service
 public class ClientAsynService {
-    
+
     @Autowired
     private IBookService bookService;
 
@@ -20,12 +19,12 @@ public class ClientAsynService {
     private IUserService userService;
 
     @Async
-    public void updatebookAfterBrowing(BookDTO book, String status) throws EntityNotFoundException, UnmatchIDException{
+    public void updatebookAfterBrowing(BookDTO book, String status) throws EntityNotFoundException, UnmatchIDException {
         bookService.updatebookAfterBrowing(book.getId(), status, book.getBorrowedTotal());
     }
 
     @Async
-    public void updateUserAfterBrowing(UserDTO user, String status) throws EntityNotFoundException, UnmatchIDException{
+    public void updateUserAfterBrowing(UserDTO user, String status) throws EntityNotFoundException, UnmatchIDException {
         userService.updateuser(user.getId(), status, user.getBorowedTotal());
     }
 }

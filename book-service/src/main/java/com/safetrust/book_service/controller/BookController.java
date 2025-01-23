@@ -1,6 +1,7 @@
 package com.safetrust.book_service.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,7 +33,16 @@ import com.safetrust.book_service.model.InventoryDTO;
 import com.safetrust.book_service.service.IBookService;
 import com.safetrust.book_service.status.EBookStatus;
 import com.safetrust.book_service.status.EReportType;
+import com.safetrust.book_service.swagger.BookPost;
+import com.safetrust.book_service.swagger.BookPut;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 /**
@@ -43,6 +53,7 @@ import jakarta.validation.Valid;
  */
 @RestController
 @RequestMapping("/book")
+@Tag(name = "BOOK", description = "Everything about library book")
 public class BookController {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -63,10 +74,12 @@ public class BookController {
      * @return List<book> amount of books
      *
      */
+    @Operation(summary = "Get all books pagination", description = "Get all books pagination")
     @GetMapping("pagination/{offset}/{pageSize}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<List<BookDTO>> getbooks(@PathVariable("offset") int offset,
-            @PathVariable("pageSize") int pageSize) {
+    public ResponseEntity<List<BookDTO>> getbooks(
+            @Parameter(description = "Book get from", required = true) @PathVariable("offset") int offset,
+            @Parameter(description = "searching Book quantity", required = true) @PathVariable("pageSize") int pageSize) {
         logger.info("Get list book with offset: {}, pageSize: {} ", offset, pageSize);
         Page<Book> books = bookService.getBookList(offset, pageSize);
         logger.info("list book object query: {} ", bookService.toString());
@@ -75,9 +88,17 @@ public class BookController {
                 HttpStatus.OK);
     }
 
+
+    @Operation(summary = "Search all books by name, author or genre", description = "Search all books by name, author or genre")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = Book.class)) }),
+        @ApiResponse(responseCode = "400", description = "Invalid Argument", content = @Content) })
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<List<BookDTO>> searchByName(@RequestParam("name") String name, @RequestParam("by") String by)
+    public ResponseEntity<List<BookDTO>> searchByName(
+            @Parameter(description = "searching value", required = true) @RequestParam("name") String name,
+            @Parameter(description = "searching key include: name, author, genre", required = true) @RequestParam("by") String by)
             throws UnmatchIDException {
         logger.info("search all book with name: {}", name);
         List<Book> books = new ArrayList<>();
@@ -106,8 +127,10 @@ public class BookController {
      * @throws EntityNotFoundException
      *
      */
+    @Operation(summary = "Get all book by inventory id", description = "Get all book by inventory id")
     @GetMapping("/inventory/{inventoryId}")
-    public List<BookDTO> searchAllByInventoryId(@PathVariable("inventoryId") long inventoryId)
+    public List<BookDTO> searchAllByInventoryId(
+            @Parameter(description = "Inventory id", required = true) @PathVariable("inventoryId") long inventoryId)
             throws EntityNotFoundException {
         logger.info("search all book with inventoryId: {}", inventoryId);
         List<Book> books = bookService.getAllBooksByInventoryId(inventoryId);
@@ -125,6 +148,7 @@ public class BookController {
      * @return book the searched book
      *
      */
+    @Operation(summary = "Get book by id", description = "Get book by id")
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<BookDTO> getbookById(@PathVariable("id") long id) throws EntityNotFoundException {
@@ -133,8 +157,13 @@ public class BookController {
         return new ResponseEntity<>(bookMapper.convertToDto(bookEntity), HttpStatus.OK);
     }
 
+    @Operation(summary = "Report search all book include: findbestbook, findoverdue, countbook", 
+                description = "Report search all book include: findbestbook, findoverdue, countbook")
     @GetMapping("/report/{report}")
-    public List<BookDTO> getBookReport(@PathVariable("report") String report) throws UnmatchIDException {
+    public List<BookDTO> getBookReport(
+            @Parameter(description = "Report type include: findbestbook, findoverdue, countbook", required = true) 
+            @PathVariable("report") String report)
+            throws UnmatchIDException {
         List<Book> books = new ArrayList<>();
         if (EReportType.FIND_BEST_BORROWED_BOOK.getValue().equals(report)) {
             logger.info("find best borrow book per inventory");
@@ -150,9 +179,10 @@ public class BookController {
                 .collect(Collectors.toList());
     }
 
+    @Operation(summary = "Report count all available book per inventory", description = "Report count all available book per inventory")
     @GetMapping("/report/countbook")
-    public Map<String, Long> getBookReportAvaille() throws UnmatchIDException {        
-        logger.info("find all overdue book per inventory");       
+    public Map<String, Long> getBookReportAvaille() throws UnmatchIDException {
+        logger.info("find all overdue book per inventory");
         return bookService.findAvailableBooksByOfPerInventory();
     }
 
@@ -168,6 +198,13 @@ public class BookController {
      * @throws UnmatchIDException
      *
      */
+    @Operation(summary = "Create a new book", description = "Create a new book")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(schema = @Schema(implementation = BookPost.class)))
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Book.class)) }),
+            @ApiResponse(responseCode = "404", description = "Invalid Argument", content = @Content) ,
+            @ApiResponse(responseCode = "500", description = "UnmatchIDException", content = @Content) })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<BookDTO> createbook(@RequestBody @Valid BookDTO book)
@@ -175,6 +212,7 @@ public class BookController {
         InventoryDTO inventory = book.getInventory();
         book.setStatus(EBookStatus.AVAILABLE);
         book.setBorrowedTotal(0);
+        book.setBorrowedDate(new Date());
         if (book == null || inventory == null || inventory.getId() == null) {
             throw new UnmatchIDException("inventory and inventoryId can't not be");
         }
@@ -194,35 +232,44 @@ public class BookController {
      * @return ResponseEntity<bookEntity>
      *
      */
+    @Operation(summary = "Update book By id", description = "Update book By id")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(schema = @Schema(implementation = BookPut.class)))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = BookPut.class)) }),
+            @ApiResponse(responseCode = "404", description = "Invalid Argument", content = @Content),
+            @ApiResponse(responseCode = "500", description = "UnmatchIDException", content = @Content) })
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<BookDTO> updatebook(@PathVariable("id") long id, @RequestBody @Valid BookDTO book)
+    public ResponseEntity<BookDTO> updatebook(@RequestBody @Valid BookDTO book)
             throws EntityNotFoundException, UnmatchIDException {
-        if (book.getId() != 0 && id != book.getId()) {
+        if (book == null || book.getId() == null) {
             logger.error("ID in URL and Body don't match");
             throw new UnmatchIDException("ID in URL and Body don't match");
         }
-        book.setId(id);
         Book bookEntity = bookMapper.convertToEntity(book);
         return new ResponseEntity<>(bookMapper.convertToDto(bookService.updateBook(bookEntity)), HttpStatus.OK);
     }
 
+    @Operation(summary = "Update book status after borrowed",description = "Update book status after borrowed")
     @PutMapping("/{status}/{id}/{total}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<BookDTO> updatebookAfterBrowing(@PathVariable("id") long id,
-            @PathVariable("status") String status, @PathVariable("total") int total)
+    public ResponseEntity<BookDTO> updatebookAfterBrowing(
+            @Parameter(description = "book id", required = true) @PathVariable("id") long id,
+            @Parameter(description = "update status include: available, borrowing, overdue, ", required = true) @PathVariable("status") String status,
+            @Parameter(description = "borrowed total per book", required = true) @PathVariable("total") int total)
             throws EntityNotFoundException, UnmatchIDException {
-        if(EBookStatus.BORROWING.getValue().equals(status)){
+        if (EBookStatus.BORROWING.getValue().equals(status)) {
             bookService.updatebookAfter(id, total + 1, EBookStatus.BORROWING);
-        } else if(EBookStatus.AVAILABLE.getValue().equals(status)){
+        } else if (EBookStatus.AVAILABLE.getValue().equals(status)) {
             bookService.updatebookAfter(id, total, EBookStatus.AVAILABLE);
-        } else if(EBookStatus.OVERDUE.getValue().equals(status)){
+        } else if (EBookStatus.OVERDUE.getValue().equals(status)) {
             bookService.updatebookAfter(id, total, EBookStatus.OVERDUE);
-        } else{
+        } else {
             logger.error("status in URL and Body don't match");
             throw new UnmatchIDException("status in URL and Body don't match");
         }
-        
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -236,6 +283,8 @@ public class BookController {
      * @throws CanNotDeleteEntityException
      *
      */
+    @Operation(summary = "Delete book by id", description = "Delete book by id")
+    @ApiResponses({ @ApiResponse(responseCode = "400", description = "Invalid Argument", content = @Content) })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deletebook(@PathVariable("id") long id) throws CanNotDeleteEntityException {

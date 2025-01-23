@@ -12,7 +12,7 @@ import com.safetrust.borrow_service.model.UserDTO;
 
 @FeignClient(name = "user-service", url = "http://localhost:8083/user")
 public interface IUserService {
-    
+
     @PutMapping("/{status}/{id}/{total}")
     ResponseEntity<UserDTO> updateuser(@PathVariable("id") long id, @PathVariable("status") String status,
             @PathVariable("total") int total)

@@ -10,18 +10,21 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableKafka
 @EnableAsync
+@OpenAPIDefinition(info = @Info(title = "Book APIs", version = "1.0.11", description = "APIs v0.0.1"))
 public class BookServiceApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(BookServiceApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(BookServiceApplication.class, args);
+    }
 
-
-	@Bean
+    @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setFieldMatchingEnabled(true)

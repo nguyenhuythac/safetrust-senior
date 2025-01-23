@@ -18,8 +18,8 @@ import com.safetrust.inventory_service.repository.InventoryRepository;
 import com.safetrust.inventory_service.service.IInventoryService;
 
 @Service
-public class InventoryService implements IInventoryService{
-    private Logger logger  = LoggerFactory.getLogger(InventoryService.class);
+public class InventoryService implements IInventoryService {
+    private Logger logger = LoggerFactory.getLogger(InventoryService.class);
 
     @Autowired
     private InventoryRepository inventoryRepo;
@@ -42,9 +42,9 @@ public class InventoryService implements IInventoryService{
     }
 
     @Override
-    public Inventory getInventoryById(long id) throws EntityNotFoundException  {
+    public Inventory getInventoryById(long id) throws EntityNotFoundException {
         Optional<Inventory> inventoryEntity = inventoryRepo.findById(id);
-        if(inventoryEntity.isPresent() ){
+        if (inventoryEntity.isPresent()) {
             return inventoryEntity.get();
         } else {
             logger.error("Inventory is not existed with id: {}", id);
@@ -70,12 +70,12 @@ public class InventoryService implements IInventoryService{
         } catch (Exception e) {
             logger.error("Inventory is not existed with id: {}, {}", id, e);
             throw new CanNotDeleteEntityException("Inventory can't be delete because relationship with id: " + id);
-        }       
+        }
     }
 
     @Override
     public List<Inventory> searchInventoryByName(String name) {
         return null;
     }
-    
+
 }

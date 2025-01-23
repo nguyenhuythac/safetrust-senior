@@ -1,7 +1,6 @@
 package com.safetrust.book_service.repository;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -27,10 +26,9 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query("select b from book b where b.genre like %?1%")
     List<Book> findByGenre(String genre);
 
-    @Query("select b1 from book b1" 
-    + " join (select b.inventory.id inventoryId, max(b.borrowedTotal) borrowedTotal from book b group by b.inventory.id) b2"
-    + " on b1.inventory.id = b2.inventoryId and b1.borrowedTotal = b2.borrowedTotal"
-    )
+    @Query("select b1 from book b1"
+            + " join (select b.inventory.id inventoryId, max(b.borrowedTotal) borrowedTotal from book b group by b.inventory.id) b2"
+            + " on b1.inventory.id = b2.inventoryId and b1.borrowedTotal = b2.borrowedTotal")
     List<Book> findBestBooksByOfPerInventory();
 
     @Query("select b from book b where b.status = ?1")

@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.safetrust.borrow_service.client.ClientAsynService;
 import com.safetrust.borrow_service.entity.Borrow;
 import com.safetrust.borrow_service.exception.CanNotDeleteEntityException;
 import com.safetrust.borrow_service.exception.EntityNotFoundException;
@@ -31,7 +30,15 @@ import com.safetrust.borrow_service.model.UserDTO;
 import com.safetrust.borrow_service.service.IBorrowService;
 import com.safetrust.borrow_service.status.EBookStatus;
 import com.safetrust.borrow_service.status.ETrackingUser;
+import com.safetrust.borrow_service.swagger.BorrowPost;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 /**
@@ -42,14 +49,12 @@ import jakarta.validation.Valid;
  */
 @RestController
 @RequestMapping("/borrow")
+@Tag(name = "BORROW", description = "Everything about library borrowing book")
 public class BorrowController {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private IBorrowService borrowService;
-
-    @Autowired
-    private ClientAsynService clientAsynService;
 
     @Autowired
     BorrowMapper borrowMapper;
@@ -65,9 +70,12 @@ public class BorrowController {
      * @return List<borrow> amount of borrows
      *
      */
+    @Operation(summary = "Get all borrow pagination", description = "Get users borrow pagination")
     @GetMapping("pagination/{offset}/{pageSize}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<List<BorrowDTO>> getborrows(@PathVariable("offset") int offset, @PathVariable("pageSize") int pageSize) {
+    public ResponseEntity<List<BorrowDTO>> getborrows(
+            @Parameter(description = "Getting borrow from", required = true) @PathVariable("offset") int offset,
+            @Parameter(description = "searching borrow quantity", required = true) @PathVariable("pageSize") int pageSize) {
         logger.info("Get list borrow with offset: {}, pageSize: {} ", offset, pageSize);
         Page<Borrow> borrows = borrowService.getBorrowsList(offset, pageSize);
         logger.info("list borrow object query: {} ", borrowService.toString());
@@ -79,27 +87,6 @@ public class BorrowController {
     /**
      * 
      * <p>
-     * Search borrows by name Restful api
-     * </p>
-     * 
-     * @param name the searched name
-     * @return List<borrow> amount of borrows
-     *
-     */
-    // @GetMapping("/search")
-    // @ResponseStatus(HttpStatus.OK)
-    // public ResponseEntity<List<BorrowDTO>> searchByName(@RequestParam("name") String name) {
-    //     logger.info("search all borrow with name: {}", name);
-    //     List<Borrow> borrows = borrowService.searchBorrowByName(name);
-    //     logger.info("total borrow search result with name: {}", borrows.size());
-    //     return new ResponseEntity<>(
-    //             borrows.stream().map(borrow -> borrowMapper.convertToDto(borrow)).collect(Collectors.toList()),
-    //             HttpStatus.OK);
-    // }
-
-    /**
-     * 
-     * <p>
      * Get borrow By Id Restful api
      * </p>
      * 
@@ -107,23 +94,31 @@ public class BorrowController {
      * @return borrow the searched borrow
      *
      */
+    @Operation(summary = "Get borrow by id", description = "Get user by id")
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<BorrowDTO> getborrowById(@PathVariable("id") int id) throws EntityNotFoundException {
         Borrow borrowEntity = borrowService.getBorrowById(id);
         logger.info("Get borrow by ID: {} result: {}", id, borrowEntity);
-        return new ResponseEntity<>(borrowMapper.convertToDto(borrowEntity),HttpStatus.OK);
+        return new ResponseEntity<>(borrowMapper.convertToDto(borrowEntity), HttpStatus.OK);
     }
 
-    
+
+    @Operation(summary = "Create a new borrow", description = "Create a new borrow")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(schema = @Schema(implementation = BorrowPost.class)))
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Borrow.class)) }),
+            @ApiResponse(responseCode = "404", description = "Invalid Argument", content = @Content) ,
+            @ApiResponse(responseCode = "500", description = "UnmatchIDException", content = @Content) })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<BorrowDTO> createborrow(@RequestBody @Valid BorrowDTO borrow)
             throws Exception {
         BookDTO book = borrow.getBook();
         UserDTO user = borrow.getUser();
-        if (borrow == null || book == null || book.getId() == null 
-            || user == null || user.getId() == null) {
+        if (borrow == null || book == null || book.getId() == null
+                || user == null || user.getId() == null) {
             throw new UnmatchIDException("inventory and inventoryId can't not be");
         }
         Borrow borrowEntity = borrowMapper.convertToEntity(borrow);
@@ -138,14 +133,17 @@ public class BorrowController {
      * Update an existing borrow Restful api
      * </p>
      * 
-     * @param id      the updated borrow id
+     * @param id     the updated borrow id
      * @param borrow the updated borrow information
      * @return ResponseEntity<borrowEntity>
      *
      */
+    @Operation(summary = "Update borrow status to done after user returns book", 
+                description = "Update borrow status, user status and book status to done after user returns book")
     @PutMapping("/update-done-status/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<BorrowDTO> updateborrowStatusToDone(@PathVariable("id") long id)
+    public ResponseEntity<BorrowDTO> updateborrowStatusToDone(
+            @Parameter(description = "Borrow id", required = true) @PathVariable("id") long id)
             throws EntityNotFoundException, UnmatchIDException {
         if (id == 0) {
             logger.error("ID in URL and Body don't match");
@@ -155,9 +153,12 @@ public class BorrowController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Operation(summary = "Update borrow status to overdue", 
+                description = "Update borrow status, user status and book status to overdue")
     @PutMapping("/update-overdue-status/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<BorrowDTO> updateborrowStatusToOverdue(@PathVariable("id") long id)
+    public ResponseEntity<BorrowDTO> updateborrowStatusToOverdue(
+        @Parameter(description = "Borrow id", required = true) @PathVariable("id") long id)
             throws EntityNotFoundException, UnmatchIDException {
         if (id == 0) {
             logger.error("ID in URL and Body don't match");
@@ -174,9 +175,10 @@ public class BorrowController {
      * </p>
      * 
      * @param id the deleted borrow id
-     * @throws CanNotDeleteEntityException 
+     * @throws CanNotDeleteEntityException
      *
      */
+    @Operation(summary = "Delete borrow by id", description = "Delete borrow by id")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteborrow(@PathVariable("id") int id) throws CanNotDeleteEntityException {

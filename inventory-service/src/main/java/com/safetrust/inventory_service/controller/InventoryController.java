@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.safetrust.inventory_service.entity.Book;
+import com.safetrust.inventory_service.client.IBookService;
 import com.safetrust.inventory_service.entity.Inventory;
 import com.safetrust.inventory_service.exception.CanNotDeleteEntityException;
 import com.safetrust.inventory_service.exception.EntityNotFoundException;
@@ -33,13 +33,19 @@ import com.safetrust.inventory_service.exception.UnmatchIDException;
 import com.safetrust.inventory_service.mapper.InventoryMapper;
 import com.safetrust.inventory_service.model.BookDTO;
 import com.safetrust.inventory_service.model.InventoryDTO;
-import com.safetrust.inventory_service.client.IBookService;
 import com.safetrust.inventory_service.service.IInventoryService;
+import com.safetrust.inventory_service.swagger.InventoryPost;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/inventory")
+@Tag(name = "INVENTORY", description = "Everything about library inventory")
 public class InventoryController {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -66,6 +72,7 @@ public class InventoryController {
      * @return List<inventory> amount of inventorys
      *
      */
+
     @GetMapping("pagination/{offset}/{pageSize}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<List<InventoryDTO>> getinventorys(@PathVariable("offset") int offset,
@@ -135,6 +142,12 @@ public class InventoryController {
      * @return ResponseEntity<inventoryEntity>
      *
      */
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, 
+            content = @Content(schema = @Schema(implementation = InventoryPost.class)))
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Inventory.class)) }),
+            @ApiResponse(responseCode = "404", description = "Invalid Argument", content = @Content) })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<InventoryDTO> createInventory(@RequestBody @Valid InventoryDTO inventory) {
@@ -144,27 +157,23 @@ public class InventoryController {
                 HttpStatus.CREATED);
     }
 
-    /**
-     * 
-     * <p>
-     * Update an existing inventory Restful api
-     * </p>
-     * 
-     * @param id        the updated inventory id
-     * @param inventory the updated inventory information
-     * @return ResponseEntity<inventoryEntity>
-     *
-     */
-    @PutMapping("/{id}")
+
+
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, 
+            content = @Content(schema = @Schema(implementation = Inventory.class)))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Inventory.class)) }),
+            @ApiResponse(responseCode = "404", description = "Invalid Argument", content = @Content) ,
+            @ApiResponse(responseCode = "500", description = "UnmatchIDException", content = @Content) })
+    @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<InventoryDTO> updateinventory(@PathVariable("id") long id,
-            @RequestBody @Valid InventoryDTO inventory)
+    public ResponseEntity<InventoryDTO> updateinventory(@RequestBody @Valid InventoryDTO inventory)
             throws EntityNotFoundException, UnmatchIDException {
-        if (inventory.getId() != 0 && id != inventory.getId()) {
-            logger.error("ID in URL and Body don't match");
-            throw new UnmatchIDException("ID in URL and Body don't match");
+        if (inventory == null || inventory.getId() == null) {
+            logger.error("ID in Body can't empty");
+            throw new UnmatchIDException("ID in Body can't empty");
         }
-        inventory.setId(id);
         Inventory inventoryEntity = inventoryMapper.convertToEntity(inventory);
         return new ResponseEntity<>(inventoryMapper.convertToDto(inventoryService.updateInventory(inventoryEntity)),
                 HttpStatus.OK);
@@ -180,6 +189,7 @@ public class InventoryController {
      * @throws CanNotDeleteEntityException
      *
      */
+    @ApiResponses({ @ApiResponse(responseCode = "400", description = "Invalid Argument", content = @Content)  })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteinventory(@PathVariable("id") long id) throws CanNotDeleteEntityException {
@@ -192,11 +202,11 @@ public class InventoryController {
         CompletableFuture<SendResult<String, Long>> future = kafkaTemplate.send(topic, id);
 
         future.whenComplete((result, ex) -> {
-        if (ex == null) {
-            System.out.println(result.toString());
-        } else {
-            System.out.println("exceoption=============");
-        }
+            if (ex == null) {
+                System.out.println(result.toString());
+            } else {
+                System.out.println("exceoption=============");
+            }
         });
     }
 }

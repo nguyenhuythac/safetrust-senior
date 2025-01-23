@@ -1,10 +1,9 @@
 package com.safetrust.book_service.model;
 
 import java.util.Date;
-import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.safetrust.book_service.status.EBookStatus;
 
 import jakarta.validation.constraints.NotBlank;
@@ -16,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class BookDTO {
     private Long id;
 
@@ -39,7 +39,4 @@ public class BookDTO {
 
     @JsonIgnoreProperties("books")
     private InventoryDTO inventory;
-
-    @JsonIgnore
-    private List<BorrowDTO> borrows;
 }

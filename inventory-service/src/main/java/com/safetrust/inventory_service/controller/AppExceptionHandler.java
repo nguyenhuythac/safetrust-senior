@@ -15,13 +15,13 @@ import com.safetrust.inventory_service.exception.UnmatchIDException;
 
 
 /**
-* 
-* This class is used for unchecked exception handling.
-* 
-* Validation check.
-* 
-* @author Thac Nguyen
-*/
+ * 
+ * This class is used for unchecked exception handling.
+ * 
+ * Validation check.
+ * 
+ * @author Thac Nguyen
+ */
 @RestControllerAdvice
 public class AppExceptionHandler {
 

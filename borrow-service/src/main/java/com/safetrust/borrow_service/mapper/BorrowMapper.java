@@ -13,24 +13,30 @@ public class BorrowMapper {
     private ModelMapper modelMapper;
 
     /**
-    * 
-    * <p>Convert entity to DTO</p>
-    * @param ContactEntity Contact Entity convert
-    * @return Contact dto
-    *
-    */
+     * 
+     * <p>
+     * Convert entity to DTO
+     * </p>
+     * 
+     * @param ContactEntity Contact Entity convert
+     * @return Contact dto
+     *
+     */
     public BorrowDTO convertToDto(Borrow entity) {
         return modelMapper.map(entity, BorrowDTO.class);
     }
 
     /**
-    * 
-    * <p>Convert DTO  To Entity</p>
-    * @param Contact Contact DTO convert
-    * @return ContactEntity 
-    *
-    */
-    public Borrow convertToEntity(BorrowDTO dto){
+     * 
+     * <p>
+     * Convert DTO To Entity
+     * </p>
+     * 
+     * @param Contact Contact DTO convert
+     * @return ContactEntity
+     *
+     */
+    public Borrow convertToEntity(BorrowDTO dto) {
         return modelMapper.map(dto, Borrow.class);
     }
 }

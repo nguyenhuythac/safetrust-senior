@@ -15,14 +15,20 @@ import com.safetrust.report_service.exception.UnmatchIDException;
 import com.safetrust.report_service.model.ReportDTO;
 import com.safetrust.report_service.service.IReportService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/report")
+@Tag(name = "REPORT", description = "Everything about library report book")
 public class ReportController {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private IReportService repostService;
 
+    @Operation(summary = "Get all best borrowed books per inventory", 
+                    description = "Get all best borrowed books per inventory")
     @GetMapping("/best-borrowed-book")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ReportDTO> getBesBookPerInventory() throws EntityNotFoundException, UnmatchIDException {
@@ -32,6 +38,8 @@ public class ReportController {
         return new ResponseEntity<>(report, HttpStatus.OK);
     }
 
+    @Operation(summary = "Get all overdue books per inventory", 
+                    description = "Get all overdue books per inventory")
     @GetMapping("/overdue-books")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ReportDTO> getOverdueBooksPerInventory() throws EntityNotFoundException, UnmatchIDException {
@@ -41,6 +49,8 @@ public class ReportController {
         return new ResponseEntity<>(report, HttpStatus.OK);
     }
 
+    @Operation(summary = "Count all  available books and users per inventory", 
+                    description = "Count all  available books and users per inventory")
     @GetMapping("/count-available")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ReportDTO> countAvailableBooksAndUserPerInventory()

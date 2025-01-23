@@ -17,16 +17,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.safetrust.user_service.entity.User;
+import com.safetrust.user_service.exception.CanNotDeleteEntityException;
+import com.safetrust.user_service.exception.EntityNotFoundException;
 import com.safetrust.user_service.repository.UserRepository;
 import com.safetrust.user_service.service.IUserService;
 import com.safetrust.user_service.status.ETrackingUser;
-import com.safetrust.user_service.exception.CanNotDeleteEntityException;
-import com.safetrust.user_service.exception.EntityNotFoundException;
 
 @Service
 @Transactional
-public class UserService implements IUserService{
-    Logger logger  = LoggerFactory.getLogger(UserService.class);
+public class UserService implements IUserService {
+    Logger logger = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
     private UserRepository userRepository;
@@ -52,13 +52,13 @@ public class UserService implements IUserService{
             logger.error("Inventory is not existed with id: {}, {}", inventoryId, e);
             throw new EntityNotFoundException("Inventory is not existed with id: " + inventoryId);
         }
-        
+
     }
 
     @Override
     public User getUserById(long id) throws EntityNotFoundException {
         Optional<User> User = userRepository.findById(id);
-        if(User.isPresent() ){
+        if (User.isPresent()) {
             return User.get();
         } else {
             logger.error("User is not existed with id: {}", id);
@@ -78,6 +78,9 @@ public class UserService implements IUserService{
         } catch (ObjectOptimisticLockingFailureException e) {
             logger.error("User is not existed with id: {}, {}", id, e);
             throw new EntityNotFoundException("User is not existed with id: " + id);
+        } catch (Exception e) {
+            logger.error("User is not existed with id: {}, {}", id, e);
+            throw new EntityNotFoundException("Inventory is not existed with id: " + user.getCreated_inventory().getId());
         }
     }
 
@@ -89,7 +92,7 @@ public class UserService implements IUserService{
             logger.error("User can't be delete because relationship with id: {}, {}", id, e);
             throw new CanNotDeleteEntityException("User can't be delete because relationship with id: " + id);
         }
-        
+
     }
 
     @Override
@@ -107,9 +110,9 @@ public class UserService implements IUserService{
         Map<String, Long> result = new HashMap<>();
         List<Object[]> countList = userRepository.findAvailableUserByOfPerInventory(ETrackingUser.FINES);
         for (Object[] count : countList) {
-            result.put((String)count[0], (Long)count[1]);
+            result.put((String) count[0], (Long) count[1]);
         }
         return result;
     }
-    
+
 }

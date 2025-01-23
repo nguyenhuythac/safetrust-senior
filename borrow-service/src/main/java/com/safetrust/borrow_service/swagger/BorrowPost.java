@@ -1,8 +1,7 @@
-package com.safetrust.borrow_service.model;
+package com.safetrust.borrow_service.swagger;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.safetrust.borrow_service.status.EBorrowStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,14 +11,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BorrowDTO {
-    private Long id;
-    private EBorrowStatus status = EBorrowStatus.BORROWING;
+public class BorrowPost {
 
     @JsonIgnoreProperties("borrows")
-    private UserDTO user;
+    private UserPost user;
 
     @JsonIgnoreProperties("borrows")
-    private BookDTO book;
+    private BookPost book;
 
 }

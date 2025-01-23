@@ -29,10 +29,10 @@ public class UserDTO {
     private String phone;
 
     @NotBlank(message = "Address should not be empty")
-    private String address;        
+    private String address;
     private ETrackingUser tracking;
     private Date createdDate;
-    private Integer borowedTotal; 
+    private Integer borowedTotal;
 
     @JsonIgnoreProperties("createdBrandUsers")
     private InventoryDTO created_inventory;

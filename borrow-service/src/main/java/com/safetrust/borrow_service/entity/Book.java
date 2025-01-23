@@ -36,7 +36,7 @@ public class Book {
     @Column
     private String status;
 
-    @Column(name="borrowed_date",updatable = false)
+    @Column(name = "borrowed_date", updatable = false)
     @CreatedDate
     private Date borrowedDate;
 
@@ -44,7 +44,7 @@ public class Book {
     private Integer borrowedTotal;
 
     @ManyToOne
-    @JoinColumn(name="inventory_id")
+    @JoinColumn(name = "inventory_id")
     private Inventory inventory;
 
     @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)

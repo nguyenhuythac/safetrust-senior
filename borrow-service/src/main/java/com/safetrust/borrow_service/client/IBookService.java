@@ -19,5 +19,5 @@ public interface IBookService {
     @PutMapping("/{status}/{id}/{total}")
     ResponseEntity<BookDTO> updatebookAfterBrowing(@PathVariable("id") long id,
             @PathVariable("status") String status, @PathVariable("total") int total)
-            throws EntityNotFoundException, UnmatchIDException ;
+            throws EntityNotFoundException, UnmatchIDException;
 }
